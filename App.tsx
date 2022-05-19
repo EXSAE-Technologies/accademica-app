@@ -1,20 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import {
+  Appbar,
+  Provider as PaperProvider
+} from 'react-native-paper';
+import {
+  NavigationContainer
+} from '@react-navigation/native';
+import { 
+  View,
+  Text
+} from 'react-native';
+import {
+  createNativeStackNavigator
+} from '@react-navigation/native-stack';
+import {
+  Dashboard
+} from './components/dashboard';
+
+const Stack = createNativeStackNavigator();
+
+function CustomHeaderBar({navigation,back}:any) {
+  return (
+    <Appbar.Header>
+      {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
+      <Appbar.Content title="Accademica" />
+    </Appbar.Header>
+  )
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <PaperProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{
+          header: (props:any)=> <CustomHeaderBar {...props} />,
+        }}>
+          <Stack.Screen name='Dashboard' component={Dashboard} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
