@@ -19,7 +19,26 @@ const LoginScreen = observer((props:any)=>{
             if(!userData.data){
                 getKey('token',(res:any)=>{
                     if(res){
-                        setNotification({content:res})
+                        sendRequest('/api/users/authenticated_user',{
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                        },(response:any)=>{
+                            var nots = ''
+                            if(response.detail !== undefined){
+                                nots += `${response.detail}\n`
+                            }
+                            if(response.username !== undefined){
+                                nots += `Welcome ${response.username}\n`
+                                userData.setData(response)
+                            }
+                
+                            setNotification({
+                                content:nots
+                            })
+                            setLoading(false)
+                        })
                     }
                 })
             }
