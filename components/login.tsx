@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Banner, Button, List, Paragraph, Subheading, TextInput, Title } from 'react-native-paper';
 import { ScrollView, View } from 'react-native';
 import { sendRequest } from './sdk';
-import { getKey, saveKey, userData, UserData } from './utils';
+import { getKey, saveKey, userData } from './utils';
 import { observer } from 'mobx-react';
 
 const LoginScreen = observer((props:any)=>{
@@ -17,12 +17,15 @@ const LoginScreen = observer((props:any)=>{
     React.useEffect(()=>{
         if(checkToken){
             if(!userData.data){
+                setLoading(true)
                 getKey('token',(res:any)=>{
                     if(res){
-                        sendRequest('/api/users/authenticated_user',{
+                        console.log(res)
+                        sendRequest('/api/users/authenticated_user/',{
                             method: 'GET',
                             headers: {
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'Authorization': `Token ${res}`
                             },
                         },(response:any)=>{
                             var nots = ''
@@ -38,7 +41,16 @@ const LoginScreen = observer((props:any)=>{
                                 content:nots
                             })
                             setLoading(false)
+                        },(error:any)=>{
+                            var nots = ''
+                            if(error.detail !== undefined){
+                                nots += `Welcome ${error.detail}\n`
+                            }
+                            console.log(error)
+                            setLoading(false)
                         })
+                    } else {
+                        setLoading(false)
                     }
                 })
             }
@@ -98,9 +110,8 @@ const LoginScreen = observer((props:any)=>{
                 }
             }
             if(error.detail !== undefined){
-                nots.push(<List.Item title={error.detail} />)
+                nots.push(error.detail)
             }
-            console.log(error)
             setLoading(false)
         })
     }
@@ -110,19 +121,20 @@ const LoginScreen = observer((props:any)=>{
             textAlign:'center',
             marginVertical:20
         }}>Login</Title>
-        {(notification)?(
-            <Banner
-                visible={Boolean(notification)}
-                actions={[
-                    {
-                        label:'Close',
-                        onPress:()=>{setNotification(null)}
-                    }
-                ]}>{notification.content}</Banner>
-        ):null}
         <View style={{
             marginHorizontal: 20
         }}>
+            {(notification)?(
+                <Banner
+                    visible={Boolean(notification)}
+                    actions={[
+                        {
+                            label:'Close',
+                            onPress:()=>{setNotification(null)}
+                        }
+                    ]}
+                    style={{marginBottom:10}}>{notification.content}</Banner>
+            ):null}
             <TextInput
                 disabled={loading}
                 label={'Username'}

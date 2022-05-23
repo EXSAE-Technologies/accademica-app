@@ -1,4 +1,4 @@
-const apiRoot = 'http://accademica.iitsar.com';
+const apiRoot = 'https://accademica.iitsar.com';
 
 export function sendRequest(path,config,callback,errorCallback){
     fetch(`${apiRoot}${path}`,{
