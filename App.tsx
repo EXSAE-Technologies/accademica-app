@@ -6,16 +6,17 @@ import {
 import {
   NavigationContainer
 } from '@react-navigation/native';
-import { 
-  View,
-  Text
-} from 'react-native';
 import {
   createNativeStackNavigator
 } from '@react-navigation/native-stack';
 import {
   Dashboard
 } from './components/dashboard';
+import {
+  userData
+} from './components/utils';
+import LoginScreen from './components/login';
+import { observer } from 'mobx-react';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,16 +29,26 @@ function CustomHeaderBar({navigation,back}:any) {
   )
 }
 
-export default function App() {
+const App = observer(() => {
   return (
     <PaperProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{
           header: (props:any)=> <CustomHeaderBar {...props} />,
         }}>
-          <Stack.Screen name='Dashboard' component={Dashboard} />
+        {userData.data ? (
+          <>
+            <Stack.Screen name='Dashboard' component={Dashboard} />
+          </>
+        ):(
+          <>
+            <Stack.Screen name='Login' component={LoginScreen} />
+          </>
+        )}
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
   );
-}
+})
+
+export default App
